@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Collections;
 
 namespace Project_9_6
 {
@@ -14,7 +11,7 @@ namespace Project_9_6
                 new System.IO.FileNotFoundException("Файл не найден."),
                 new IndexOutOfRangeException("ID не может быть больше или равно 5."),
                 new UnauthorizedAccessException("У вас нету прав доступа к этой папке."),
-                new EmptyStringException("Значение строки не должно быть пустым.")
+                new SortingException("Сортировка не удалась.")
         };
 
         //не очень я конечно уверен что это именно то, что нужно, но вроде так я пониял
@@ -58,13 +55,13 @@ namespace Project_9_6
                 Console.WriteLine(uaex);
             }
 
-            try
+            try // Сортировка студентов
             {
-                emptyStringException("");
+                SortingStudents(new string[] { "Борис", "Петр", "Анатолий", "Максим", "Яна" }, 0);
             }
-            catch (EmptyStringException esex) // Это типо моё детище
+            catch (SortingException sortingException)
             {
-                Console.WriteLine(esex);
+                Console.WriteLine(sortingException);
             }
 
             Console.ReadKey();
@@ -92,7 +89,7 @@ namespace Project_9_6
 
         public static void indexOutOfRangeException(byte id)
         {
-            string[] data = new string[5] { "text0", "text1", "text2", "text3", "text4" }; // Будем считать что от куда-то он берёт именно эту строчку
+            string[] data = new string[5] { "text0", "text1", "text2", "text3", "text4" };
 
             string text = "";
 
@@ -133,13 +130,34 @@ namespace Project_9_6
             }
         }
 
-        public static void emptyStringException(string Text) // Это типо моё детище
+        public static void SortingStudents(string[] Data, byte Type) // Сортировка студентов
         {
-            if (Text == null || Text == "" || Text == default(string))
-            {
-                EmptyStringException esex = (EmptyStringException)excepitionsContainer[4];
 
-                throw new EmptyStringException("Ошибка", esex);
+            if (Type > 2 || Type < 1)
+            {
+                SortingException sortingException = (SortingException)excepitionsContainer[4];
+
+                throw new SortingException("Ошибка, не верный тип сортировки.", sortingException);
+            }
+            else
+            {
+                IComparer comparer = null;
+
+                Sorting.students_data = Data;
+
+                if (Type == 1)
+                {
+                    comparer = new Sorting.Comparer();
+                }
+
+                if (Type == 2)
+                {
+                    comparer = new Sorting.ReverseComparer();
+                }
+
+                Array.Sort(Sorting.students_data, comparer);
+
+                Sorting.DisplayValues(Sorting.students_data);
             }
         }
     }
